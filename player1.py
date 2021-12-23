@@ -169,17 +169,31 @@ def step(player: int):
     plateau_size = parse_field_info()
     coords_set_friend, coords_set_enemy = parse_field(player, plateau_size)
     piece_set, piece_size, vertical, horizontal = parse_figure()
-    possible_moves = []
+    possible_moves = set()
     for i in coords_set_friend:
         posible_coords = generate_possible_coords(i, piece_size, plateau_size, coords_set_friend, vertical, horizontal, piece_set)
         for j in posible_coords:
             #debug(piece_set)
             if check_possibility(j, piece_set, coords_set_friend, coords_set_enemy, plateau_size):
                 #debug("True")
-                possible_moves.append(j)
-    #debug(possible_moves)
-    move = random.choice(possible_moves)
-    return move
+                possible_moves.add(j)
+    #debug(possible_moves])
+    for i in possible_moves:
+        return i
+    #for i in coords_set_friend:
+    #    if i[0] in range(plateau_size[0]//2):
+    #        if i[1] in range(plateau_size[1]//2):
+    #            return max(possible_moves, key = lambda x: x[1])
+    #        else:
+    #            return min(possible_moves, key = lambda x: x[1])
+    #    else:
+    #        if i[1] in range(plateau_size[1]//2):
+#
+    #           return min(possible_moves, key = lambda x: x[0])
+#
+    #        else:
+    #            return max(possible_moves, key = lambda x: x[0])
+
 
 def check_possibility(posible_coords: tuple,
                       figure_coords: List[tuple], 
@@ -204,13 +218,21 @@ def check_possibility(posible_coords: tuple,
         possible_real_coords.add((real_height, real_length))
     count = 0
     enemy_count = 0
+#debug(possible_real_coords)
     for coords in possible_real_coords:
         if coords[0] == plateau_size[0] or coords[1] == plateau_size[1]:
             return False
         if coords in coords_set_friend:
             count+=1
+            if count>1:
+                return False
+        
+        
         if coords in coords_set_enemy:
+            #debug(True)
             enemy_count+=1
+            if enemy_count > 0:
+                return False
     return count == 1 and enemy_count == 0
 
 def generate_possible_coords(point_coords:tuple, piece_size:tuple, plateau_size:tuple, coords_set_friend: List[tuple], vertical, horizontal, figure_coords)->dict:
@@ -222,71 +244,73 @@ def generate_possible_coords(point_coords:tuple, piece_size:tuple, plateau_size:
     :return dict
     
     """
-    grid_height =  [x for x in range(vertical[0]+1)]
-    grid_length =  [x for x in range(horizontal[0]+1)]
-    grid_height.reverse()
-    grid_length.reverse()
-    #debug(f"h: {grid_height}")
-    #debug(f"l: {grid_length}")
-    #debug(f"v: {vertical}")
-    #debug(f"h: {horizontal}")
-    #debug(f"c: {figure_coords}")
-    projection = set()
-    #fix looped index or find another way to rotate
-    for i in figure_coords:
-        length, height = i
-        #debug(f"{grid_height}, {[height]}")
-        #debug(f"{grid_length}, {[length]}")
-        half_rotation = grid_height[height], grid_length[length]
-        relative_coords = point_coords[0] - half_rotation[0], point_coords[1] - half_rotation[1]
-        if relative_coords[0] > 0 and relative_coords[1] > 0:
-            projection.add(relative_coords)
-    return projection
-    
-    #plateau_height, plateau_length = plateau_size
-    #posible_coords = set()
-    #main_height = point_coords[0]
-    #main_length = point_coords[1]
-    ##if 0 in point_coords or plateau_height or plateau_length in point_coords:
-    ##    return set()
-    #surrounding = ((main_height + 1, main_length + 1),
-    #              (main_height + 1, main_length - 1),
-    #              (main_height + 1, main_length + 0),
-    #              (main_height + 0, main_length + 1),
-    #              (main_height + 0, main_length - 1),
-    #              (main_height + 1, main_length + 0),
-    #              (main_height - 1, main_length - 1),
-    #              (main_height - 1, main_length + 1))
-    #count = 0
-    #for i in surrounding:
-    #    if i in coords_set_friend:
-    #        count += 1
-    #if count == 8:
-    #    return set()
+   
+    #grid_height =  [x for x in range(vertical[0]+1)]
+    #grid_length =  [x for x in range(horizontal[0]+1)]
+    #grid_height.reverse()
+    #grid_length.reverse()
+    ##debug(f"h: {grid_height}")
+    ##debug(f"l: {grid_length}")
+    ##debug(f"v: {vertical}")
+    ##debug(f"h: {horizontal}")
+    ##debug(f"c: {figure_coords}")
+    #projection = set()
+    ##fix looped index or find another way to rotate
+    #for i in figure_coords:
+    #    length, height = i
+    #    #debug(f"{grid_height}, {[height]}")
+    #    #debug(f"{grid_length}, {[length]}")
+    #    half_rotation = grid_height[height], grid_length[length]
+    #    relative_coords = point_coords[0] - half_rotation[0], point_coords[1] - half_rotation[1]
+    #    if relative_coords[0] +vertical[1]-1 > 0 and relative_coords[1] + horizontal[1] -1 > 0:
+    #        projection.add(relative_coords)
+    #    
+    #return projection
     #
-    #for height in range(abs(vertical[1])+1):
-#
-    #    for length in range(abs(horizontal[1])+1):
-#
-    #        minus_height = main_height - height
-    #        plus_height = main_height + height
-    #        minus_length = main_length - length
-    #        plus_length = main_length + length
-#
-    #        if plateau_height - piece_size[0] > plus_height and plateau_length - piece_size[1] > plus_length:
-    #            posible_coords.add((plus_height, plus_length))
-#
-    #        if plateau_length - piece_size[1] > plus_length and minus_height > 0:
-    #            posible_coords.add((minus_height, plus_length))
-#
-    #        if plateau_height - piece_size[0] > plus_height and minus_length > 0:
-    #            posible_coords.add((plus_height, minus_length))
-#
-    #        if minus_height > 0 and minus_length > 0:
-    #            posible_coords.add((minus_height, minus_length))
+    plateau_height, plateau_length = plateau_size
+    posible_coords = set()
+    main_height = point_coords[0]
+    main_length = point_coords[1]
+    ###if 0 in point_coords or plateau_height or plateau_length in point_coords:
+    ###    return set()
+    surrounding = ((main_height + 1, main_length + 1),
+                   (main_height + 1, main_length - 1),
+                   (main_height + 1, main_length + 0),
+                   (main_height + 0, main_length + 1),
+                   (main_height + 0, main_length - 1),
+                   (main_height + 1, main_length + 0),
+                   (main_height - 1, main_length - 1),
+                   (main_height - 1, main_length + 1))
+    count = 0
+    for i in surrounding:
+        if i in coords_set_friend:
+            count += 1
+    if count == 8:
+        return set()
+    #
+    for height in range(abs(horizontal[1]-horizontal[0])+1):
+
+        for length in range(abs(vertical[1]-vertical[0])+1):
+
+            minus_height = main_height - height - horizontal[0]
+            plus_height = main_height + height - horizontal[0]
+            minus_length = main_length - length - vertical[0]
+            plus_length = main_length + length - vertical[0]
+
+            if plateau_height - piece_size[0] -1 > plus_height and plateau_length - piece_size[1] -1 > plus_length:
+                posible_coords.add((plus_height, plus_length))
+
+            if plateau_length - piece_size[1] -1> plus_length and minus_height -1> 0:
+                posible_coords.add((minus_height, plus_length))
+
+            if plateau_height - piece_size[0] -1 > plus_height and minus_length -2> 0:
+                posible_coords.add((plus_height, minus_length))
+
+            if minus_height - 1> 0 and minus_length -2 > 0:
+                posible_coords.add((minus_height, minus_length))
     #debug(point_coords)
     #debug(posible_coords)
-    #return posible_coords
+    return posible_coords
 
 def play(player: int):
     """
@@ -294,7 +318,7 @@ def play(player: int):
     :param player int: Represents whether we're the first or second player
     """
     while True:
-        move = step(player)
+        move= step(player)
         print(*move)
 
 
