@@ -161,7 +161,7 @@ def circumcise(piece_set:set)->tuple:
     
 
 
-def step(player: int):
+def step(player: int, turn):
     """
     Perform one step of the game.
     :param player int: Represents whether we're the first or second player
@@ -179,7 +179,11 @@ def step(player: int):
                 possible_moves.add(j)
     #debug(possible_moves])
     for i in possible_moves:
-        return i
+
+        if turn < (plateau_size[0]**2 +plateau_size[1]**2)**(1/2)/4:
+            return min(possible_moves, key = lambda x: x[0] + x[1])
+        return max(possible_moves, key = lambda x: x[0] + x[1])
+
     #for i in coords_set_friend:
     #    if i[0] in range(plateau_size[0]//2):
     #        if i[1] in range(plateau_size[1]//2):
@@ -317,8 +321,10 @@ def play(player: int):
     Main game loop.
     :param player int: Represents whether we're the first or second player
     """
+    turn = 0
     while True:
-        move= step(player)
+        turn+=1
+        move= step(player, turn)
         print(*move)
 
 
